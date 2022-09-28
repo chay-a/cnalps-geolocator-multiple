@@ -36,19 +36,22 @@ function cnalps_register_geolocate_multiple_shortcode($atts = [])
             })
             .then(response => {
 
-                let map$id = L.map('cnalps-map-$id').fitBounds([[response[0].lat, response[0].lon], [response[1].lat, response[1].lon]], {padding:[50, 50]});
+                let map$id = L.map('cnalps-map-$id');
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors'
                 }).addTo(map$id);
-                var markers = L.markerClusterGroup();
+
+                let markersCoord = [];
+                let markers = L.markerClusterGroup();
                 response.forEach(marker => {
                     markers.addLayer(L.marker([marker.lat, marker.lon]).addTo(map$id)
                     .bindPopup(marker.title)
                     .openPopup());
+                    markersCoord.push([marker.lat, marker.lon]);
                 });
 
-                map$id.addLayer(markers);
+                map$id.addLayer(markers).fitBounds(markersCoord, {padding:[50, 50]});
 
             });
 
